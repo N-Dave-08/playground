@@ -15,21 +15,23 @@ mongoose.connect('mongodb://localhost:27017/nextCrud')
     })
 
 interface Item extends Document {
-    name: string
+    title: string
     description: string
+    createdAt: Date
 }
 
 const ItemSchema = new mongoose.Schema<Item>({
-    name: String,
-    description: String,
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
 })
 
 const ItemModel = mongoose.model<Item>('Item', ItemSchema, 'todo')
 
 // create
-app.post('/items', async (req: Request, res: Response) => {
-    const { name, description } = req.body
-    const newItem = new ItemModel({ name, description })
+app.post('/items', async( req: Request, res: Response) => {
+    const {title, description} = req.body
+    const newItem = new ItemModel({title, description})
     await newItem.save()
     res.status(201).json(newItem)
 })
@@ -37,15 +39,16 @@ app.post('/items', async (req: Request, res: Response) => {
 // read
 app.get('/items', async (req: Request, res: Response) => {
     const items = await ItemModel.find()
+    console.log(items)
     res.status(200).json(items)
 })
 
 // update
 app.put('/items/:id', async (req: Request, res: Response) => {
-    const { id } = req.params
-    const { name, description } = req.body
+    const {id} = req.params
+    const { title, description} = req.body
     const updateItem = await ItemModel.findByIdAndUpdate(
-        id, { name, description }, { new: true }
+        id, {title, description}, {new: true}
     )
     res.status(200).json(updateItem)
 })

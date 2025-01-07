@@ -26,27 +26,29 @@ mongoose_1.default.connect('mongodb://localhost:27017/nextCrud')
     console.log('error connecting to mongodb', err);
 });
 const ItemSchema = new mongoose_1.default.Schema({
-    name: String,
-    description: String,
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
 });
 const ItemModel = mongoose_1.default.model('Item', ItemSchema, 'todo');
 // create
 app.post('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, description } = req.body;
-    const newItem = new ItemModel({ name, description });
+    const { title, description } = req.body;
+    const newItem = new ItemModel({ title, description });
     yield newItem.save();
     res.status(201).json(newItem);
 }));
 // read
 app.get('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const items = yield ItemModel.find();
+    console.log(items);
     res.status(200).json(items);
 }));
 // update
 app.put('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { name, description } = req.body;
-    const updateItem = yield ItemModel.findByIdAndUpdate(id, { name, description }, { new: true });
+    const { title, description } = req.body;
+    const updateItem = yield ItemModel.findByIdAndUpdate(id, { title, description }, { new: true });
     res.status(200).json(updateItem);
 }));
 // delete

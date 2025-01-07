@@ -1,18 +1,16 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import AddItem from "@/components/forms/add-item";
+import Items from "@/components/items";
+import { Item } from "@/components/items";
 import axios from "axios";
-import { AddItem } from "@/components/add-item";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { UpdateItem } from "@/components/update-item";
-import { Item } from "@/components/add-item";
 
 export default function Home() {
-  const [items, setItems] = useState<Item[]>([])
-  const [error, setError] = useState<string>()
-  const [loading, setLoading] = useState<boolean>(true)
 
+  const [items, setItems] = useState<Item[]>([])
+
+  // read
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -20,63 +18,34 @@ export default function Home() {
         setItems(res.data)
       } catch (error) {
         console.error('error fetching data', error)
-        setError('failed to load data')
-      } finally {
-        setLoading(false)
       }
     }
     fetchData()
   }, [])
 
-  const handleRemove = async (id: string) => {
-    await axios.delete(`http://localhost:5000/items/${id}`)
-    setItems(items.filter(item => item._id !== id))
+  // delete
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`http://localhost:5000/items/${id}`)
+      setItems((prevItems) => prevItems.filter((item) => item._id !== id))
+    } catch (error) {
+      console.error('error deleteing an item', error)
+    }
   }
 
-  const handleUpdate = (updatedItem: { name: string; description: string }, id: string) => {
-    // Update the item in the state without needing to refresh
-    setItems(items.map(item =>
-      item._id === id ? { ...item, ...updatedItem } : item
-    ));
-  };
+  // update
+  const handleUpdate = (updatedItem: Item) => {
+    setItems((prevItems) => prevItems.map((item) => item._id === updatedItem._id ? updatedItem : item))
+  }
 
   return (
-    <div className="flex gap-4 items-center justify-center h-screen">
-      <Card className="w-1/2">
-        <CardHeader>
-          <CardTitle>To Do List</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {
-              !loading ? (
-                items.length === 0 ? <div>no items found</div> :
-                  items.map((item) => (
-                    <li key={item._id} className="list-disc">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="capitalize">{item.name}</h4>
-                          <p>{item.description}</p>
-                        </div>
-                        <div className="space-x-2">
-                          <UpdateItem
-                            id={item._id}
-                            currentName={item.name}
-                            currentDescription={item.description}
-                            onSave={(updatedItem) => handleUpdate(updatedItem, item._id)} 
-                          />
-                          <Button variant={'destructive'} onClick={() => handleRemove(item._id)}>Delete</Button>
-                        </div>
-                      </div>
-                    </li>
-                  ))
-              ) : (
-                <div>loading..</div>
-              )
-            }
-          </ul>
-        </CardContent>
-      </Card>
+    <div className="flex items-center justify-center px-20 gap-5">
+      <div>
+        <h6 className="font-bold mb-4">To-Do List made in NextJs + ExpressJs + MongoDB</h6>
+        <div className="p-10  bg-gray-50 dark:bg-black rounded-lg">
+          <Items items={items} deleteItem={handleDelete} updateItem={handleUpdate}/>
+        </div>
+      </div>
       <AddItem setItems={setItems} />
     </div>
   );
