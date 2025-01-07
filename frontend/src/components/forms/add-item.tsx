@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -17,25 +17,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Item } from '@/components/items'
 import axios from 'axios'
-
-const formSchema = z.object({
-    title: z.string().min(3, {
-        message: "Title must be at least 3 characters long."
-    }).max(10, {
-        message: "Title must not exceed 10 characters."
-    }),
-    description: z.string().min(3, {
-        message: "Description must be at least 3 characters long."
-    }).max(50, {
-        message: "Description must not exceed 50 characters."
-    }),
-})
-
+import { formSchema } from '@/helpers/schemas'
 interface AddItemProps {
     setItems: React.Dispatch<React.SetStateAction<Item[]>>
 }
 
-export default function AddItem({setItems}: AddItemProps) {
+export default function AddItem({ setItems }: AddItemProps) {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
