@@ -35,7 +35,7 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
         }
     })
 
-    const { handleSubmit, formState: { errors }, setValue } = form
+    const { handleSubmit, formState: { errors } } = form
 
     const handleUpdate = async (values: z.infer<typeof formSchema>) => {
         try {
