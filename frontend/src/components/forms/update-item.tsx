@@ -10,14 +10,14 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { formSchema } from "@/helpers/schemas"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { Item } from "@/components/items"
 import axios from "axios"
-import { useState } from "react"
-import { z } from 'zod'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { formSchema } from "@/helpers/schemas"
-import { useForm } from "react-hook-form"
+import { Textarea } from "../ui/textarea"
 
 interface UpdateItemProps {
     item: Item
@@ -43,14 +43,14 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
             onUpdate(res.data)
             setOpen(false)
         } catch (error) {
-            console.error("error updating item", error)
+            console.error('error updating an item', error)
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size={'sm'}>Edit</Button>
+                <Button variant="outline">Edit</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
@@ -59,43 +59,39 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
                         Make changes to your item here. Click save when you're done.
                     </DialogDescription>
                 </DialogHeader>
-                <form action="" onSubmit={handleSubmit(handleUpdate)}>
+                <form onSubmit={handleSubmit(handleUpdate)}>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">
+                            <Label htmlFor="title" className="text-right">
                                 Title
                             </Label>
                             <Input
                                 id="title"
                                 className="col-span-3"
-                                {...form.register("title")}
+                                {...form.register('title')}
                                 aria-invalid={errors.title ? "true" : "false"}
                             />
-                            <div>
-                                {/* empty space */}
-                            </div>
+                            <div></div>
                             {
                                 errors.title && (
-                                    <span className="col-span-3 text-red-400 text-sm">{errors.title.message}</span>
+                                    <span className="text-red-500 text-sm col-span-3">{errors.title.message}</span>
                                 )
                             }
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="username" className="text-right">
+                            <Label htmlFor="description" className="text-right">
                                 Description
                             </Label>
                             <Textarea
                                 id="description"
                                 className="col-span-3"
-                                {...form.register("description")}
+                                {...form.register('description')}
                                 aria-invalid={errors.description ? "true" : "false"}
                             />
-                            <div>
-                                {/* empty space */}
-                            </div>
+                            <div></div>
                             {
                                 errors.description && (
-                                    <span className="col-span-3 text-red-400 text-sm">{errors.description.message}</span>
+                                    <span className="text-red-500 text-sm col-span-3">{errors.description.message}</span>
                                 )
                             }
                         </div>

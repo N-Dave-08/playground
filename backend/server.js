@@ -26,9 +26,18 @@ mongoose_1.default.connect('mongodb://localhost:27017/nextCrud')
     console.log('error connecting to mongodb', err);
 });
 const ItemSchema = new mongoose_1.default.Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
 });
 const ItemModel = mongoose_1.default.model('Item', ItemSchema, 'todo');
 // create
@@ -48,8 +57,8 @@ app.get('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.put('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { title, description } = req.body;
-    const updateItem = yield ItemModel.findByIdAndUpdate(id, { title, description }, { new: true });
-    res.status(200).json(updateItem);
+    const udpateItem = yield ItemModel.findByIdAndUpdate(id, { title, description }, { new: true });
+    res.status(200).json(udpateItem);
 }));
 // delete
 app.delete('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -58,5 +67,5 @@ app.delete('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, functio
     res.status(204).send();
 }));
 app.listen(5000, () => {
-    console.log("server is running in port 5000");
+    console.log('server is running in port 5000');
 });
