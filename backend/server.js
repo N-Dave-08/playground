@@ -23,16 +23,16 @@ mongoose_1.default.connect('mongodb://localhost:27017/nextCrud')
     console.log('connected to mongodb');
 })
     .catch((err) => {
-    console.log('error connecting to mongodb', err);
+    console.error('error connecting to mongodb', err);
 });
 const ItemSchema = new mongoose_1.default.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
     },
     description: {
         type: String,
-        required: true
+        required: true,
     },
     createdAt: {
         type: Date,
@@ -42,29 +42,52 @@ const ItemSchema = new mongoose_1.default.Schema({
 const ItemModel = mongoose_1.default.model('Item', ItemSchema, 'todo');
 // create
 app.post('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description } = req.body;
-    const newItem = new ItemModel({ title, description });
-    yield newItem.save();
-    res.status(201).json(newItem);
+    try {
+        const { title, description } = req.body;
+        const newItem = new ItemModel({ title, description });
+        yield newItem.save();
+        res.status(201).json(newItem);
+    }
+    catch (error) {
+        console.error('error adding an item', error);
+        res.status(500).json({ error: 'failed adding an item' });
+    }
 }));
 // read
 app.get('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const items = yield ItemModel.find();
-    console.log(items);
-    res.status(200).json(items);
+    try {
+        const items = yield ItemModel.find();
+        res.status(200).json(items);
+    }
+    catch (error) {
+        console.error('error fetching item list', error);
+        res.status(500).json({ error: 'failed fetching item list' });
+    }
 }));
 // update
 app.put('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const { title, description } = req.body;
-    const udpateItem = yield ItemModel.findByIdAndUpdate(id, { title, description }, { new: true });
-    res.status(200).json(udpateItem);
+    try {
+        const { id } = req.params;
+        const { title, description } = req.body;
+        const updateItem = yield ItemModel.findByIdAndUpdate(id, { title, description }, { new: true });
+        res.status(200).json(updateItem);
+    }
+    catch (error) {
+        console.error('error updating item', error);
+        res.status(500).json({ error: 'failed updating item' });
+    }
 }));
 // delete
 app.delete('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    yield ItemModel.findByIdAndDelete(id);
-    res.status(204).send();
+    try {
+        const { id } = req.params;
+        yield ItemModel.findByIdAndDelete(id);
+        res.status(204).send();
+    }
+    catch (error) {
+        console.error('error deleting item', error);
+        res.status(500).json({ error: 'failed deleting item' });
+    }
 }));
 app.listen(5000, () => {
     console.log('server is running in port 5000');

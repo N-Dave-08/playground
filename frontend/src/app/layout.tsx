@@ -4,7 +4,6 @@ import "./globals.css";
 
 const inter = Inter({
   subsets: ['latin'],
-  variable: "--inter-sans"
 })
 
 export const metadata: Metadata = {
@@ -18,9 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} antialiased flex flex-col items-center justify-center h-screen w-full`}
+        className={`${inter.className} flex flex-col items-center justify-center h-screen`}
       >
         {children}
       </body>

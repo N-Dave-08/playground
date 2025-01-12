@@ -10,18 +10,19 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { formSchema } from "@/helpers/schemas"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { PenSquare } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
 import { Item } from "@/components/items"
+import { formSchema } from "@/helpers/schemas"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { useState } from "react"
 import axios from "axios"
-import { Textarea } from "../ui/textarea"
 
 interface UpdateItemProps {
     item: Item
-    onUpdate: (updatedItem: Item) => void
+    onUpdate: (udpatedItem: Item) => void
 }
 
 export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
@@ -32,7 +33,7 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
         defaultValues: {
             title: item.title,
             description: item.description,
-        }
+        },
     })
 
     const { handleSubmit, formState: { errors } } = form
@@ -40,7 +41,8 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
     const handleUpdate = async (values: z.infer<typeof formSchema>) => {
         try {
             const res = await axios.put(`http://localhost:5000/items/${item._id}`, values)
-            onUpdate(res.data)
+            const editedItem = res.data
+            onUpdate(editedItem)
             setOpen(false)
         } catch (error) {
             console.error('error updating an item', error)
@@ -50,7 +52,9 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">Edit</Button>
+                <Button size={'icon'}>
+                    <PenSquare />
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
@@ -65,16 +69,15 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
                             <Label htmlFor="title" className="text-right">
                                 Title
                             </Label>
-                            <Input
-                                id="title"
-                                className="col-span-3"
-                                {...form.register('title')}
-                                aria-invalid={errors.title ? "true" : "false"}
+                            <Input 
+                            id="title" 
+                            className="col-span-3" 
+                            {...form.register('title')}
+                            aria-invalid={errors.title ? "true" : "false"}
                             />
-                            <div></div>
                             {
                                 errors.title && (
-                                    <span className="text-red-500 text-sm col-span-3">{errors.title.message}</span>
+                                    <div>{errors.title.message}</div>
                                 )
                             }
                         </div>
@@ -82,16 +85,15 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
                             <Label htmlFor="description" className="text-right">
                                 Description
                             </Label>
-                            <Textarea
-                                id="description"
-                                className="col-span-3"
-                                {...form.register('description')}
-                                aria-invalid={errors.description ? "true" : "false"}
+                            <Textarea 
+                            id="description" 
+                            className="col-span-3" 
+                            {...form.register('description')}
+                            aria-invalid={errors.description ? "true" : "false"} 
                             />
-                            <div></div>
                             {
                                 errors.description && (
-                                    <span className="text-red-500 text-sm col-span-3">{errors.description.message}</span>
+                                    <div>{errors.description.message}</div>
                                 )
                             }
                         </div>

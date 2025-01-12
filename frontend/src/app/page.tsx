@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from "react";
 import List from "@/components/items";
+import AddItem from "@/components/forms/add-item";
 import { Item } from "@/components/items";
-import {AddItem} from "@/components/forms/add-item";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import axios from "axios"
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([])
@@ -15,7 +15,7 @@ export default function Home() {
         const res = await axios.get('http://localhost:5000/items')
         setItems(res.data)
       } catch (error) {
-        console.error('error fetching item list', error)
+        console.error('error fetching data', error)
       }
     }
     fetchData()
@@ -31,13 +31,20 @@ export default function Home() {
   }
 
   const handleUpdate = (updatedItem: Item) => {
-    setItems((prevItems) => prevItems.map((item) => item._id === updatedItem._id ? updatedItem : item))
-  }
+    setItems((prevItems) =>
+        prevItems.map((item) =>
+            item._id === updatedItem._id ? updatedItem : item
+        )
+    )
+}
 
   return (
-    <div className="w-full px-44 flex gap-3">
-      <List items={items} deleteItem={handleDelete} updateItem={handleUpdate}/>
-      <AddItem setItems={setItems}/>
+    <div>
+      <h4 className='font-bold mb-2'>To-Do List using NextJs, ExpressJs, and MongoDb</h4>
+      <div className="flex gap-3">
+        <List items={items} deleteItem={handleDelete} updateItem={handleUpdate}/>
+        <AddItem setItems={setItems}/>
+      </div>
     </div>
   );
 }
