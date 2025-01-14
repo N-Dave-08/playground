@@ -9,23 +9,29 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { PenSquare } from "lucide-react"
-import { Textarea } from "@/components/ui/textarea"
-import { Item } from "@/components/items"
-import { formSchema } from "@/helpers/schemas"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
 import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { PenSquare } from "lucide-react"
+import { formSchema } from "@/helpers/schemas"
+import { Item } from "@/components/items"
 import { useState } from "react"
 import axios from "axios"
 
 interface UpdateItemProps {
     item: Item
-    onUpdate: (udpatedItem: Item) => void
+    onUpdate: (updatedItem: Item) => void
 }
 
-export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
+export function UpdateItem({item, onUpdate}: UpdateItemProps) {
     const [open, setOpen] = useState<boolean>(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -36,23 +42,21 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
         },
     })
 
-    const { handleSubmit, formState: { errors } } = form
-
     const handleUpdate = async (values: z.infer<typeof formSchema>) => {
         try {
             const res = await axios.put(`http://localhost:5000/items/${item._id}`, values)
-            const editedItem = res.data
-            onUpdate(editedItem)
+            const updatedItem = res.data
+            onUpdate(updatedItem)
             setOpen(false)
         } catch (error) {
-            console.error('error updating an item', error)
+            console.error('error updating item', error)
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size={'icon'}>
+                <Button size={'sm'}>
                     <PenSquare />
                 </Button>
             </DialogTrigger>
@@ -60,48 +64,42 @@ export function UpdateItem({ item, onUpdate }: UpdateItemProps) {
                 <DialogHeader>
                     <DialogTitle>Edit Item</DialogTitle>
                     <DialogDescription>
-                        Make changes to your item here. Click save when you're done.
+                        Make changes to your profile here. Click save when you're done.
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit(handleUpdate)}>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="title" className="text-right">
-                                Title
-                            </Label>
-                            <Input 
-                            id="title" 
-                            className="col-span-3" 
-                            {...form.register('title')}
-                            aria-invalid={errors.title ? "true" : "false"}
-                            />
-                            {
-                                errors.title && (
-                                    <div>{errors.title.message}</div>
-                                )
-                            }
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="description" className="text-right">
-                                Description
-                            </Label>
-                            <Textarea 
-                            id="description" 
-                            className="col-span-3" 
-                            {...form.register('description')}
-                            aria-invalid={errors.description ? "true" : "false"} 
-                            />
-                            {
-                                errors.description && (
-                                    <div>{errors.description.message}</div>
-                                )
-                            }
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="submit">Save changes</Button>
-                    </DialogFooter>
-                </form>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleUpdate)} className="space-y-8">
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Title</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="enter title here" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="enter description here" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <DialogFooter>
+                            <Button type="submit">Save changes</Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     )

@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express"
-import mongoose, { Document, mongo } from "mongoose"
+import mongoose, { Document } from "mongoose"
 import cors from "cors"
 
 const app = express()
-
 app.use(cors())
 app.use(express.json())
 
@@ -16,19 +15,19 @@ mongoose.connect('mongodb://localhost:27017/nextCrud')
     })
 
 interface Item extends Document {
-    title: String
-    description: String
+    title: string
+    description: string
     createdAt: Date
 }
 
 const ItemSchema = new mongoose.Schema<Item>({
     title: {
         type: String,
-        required: true,
+        required: true
     },
     description: {
         type: String,
-        required: true,
+        required: true
     },
     createdAt: {
         type: Date,
@@ -46,8 +45,8 @@ app.post('/items', async (req: Request, res: Response) => {
         await newItem.save()
         res.status(201).json(newItem)
     } catch (error) {
-        console.error('error adding an item', error)
-        res.status(500).json({ error: 'failed adding an item' })
+        console.error('failed creating an item', error)
+        res.status(500).json({ error: 'failed creating an item' })
     }
 })
 
@@ -57,7 +56,7 @@ app.get('/items', async (req: Request, res: Response) => {
         const items = await ItemModel.find()
         res.status(200).json(items)
     } catch (error) {
-        console.error('error fetching item list', error)
+        console.error('failed fetching item list', error)
         res.status(500).json({ error: 'failed fetching item list' })
     }
 })
@@ -70,20 +69,20 @@ app.put('/items/:id', async (req: Request, res: Response) => {
         const updateItem = await ItemModel.findByIdAndUpdate(id, { title, description }, { new: true })
         res.status(200).json(updateItem)
     } catch (error) {
-        console.error('error updating item', error)
-        res.status(500).json({ error: 'failed updating item' })
+        console.error('failed updating an item', error)
+        res.status(500).json({ error: 'failed updating an item' })
     }
 })
 
 // delete
-app.delete('/items/:id', async (req: Request, res: Response) => {
+app.delete('/items/:id', async(req: Request, res: Response) => {
     try {
-        const { id } = req.params
+        const {id} = req.params
         await ItemModel.findByIdAndDelete(id)
         res.status(204).send()
     } catch (error) {
-        console.error('error deleting item', error)
-        res.status(500).json({ error: 'failed deleting item' })
+        console.error('failed deleting an item', error)
+        res.status(500).json({ error: 'failed deleting an item' })
     }
 })
 

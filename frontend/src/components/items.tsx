@@ -1,8 +1,8 @@
 import React from 'react'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { Trash } from 'lucide-react'
+import { Trash, PenSquare } from 'lucide-react'
 import { UpdateItem } from '@/components/forms/update-item'
 
 export type Item = {
@@ -18,27 +18,22 @@ interface ItemProps {
     updateItem: (updatedItem: Item) => void
 }
 
-export default function List({items, deleteItem, updateItem}: ItemProps) {
+export default function Items({ items, deleteItem, updateItem }: ItemProps) {
     return (
-        <ScrollArea className='bg-slate-50 p-5 h-[500px] w-[800px] rounded-lg'>
+        <ScrollArea className='bg-slate-50 rounded-lg p-5 w-96 h-[500px] overflow-auto'>
             {
                 items.map((item, index) => (
                     <div key={item._id}>
-                        <div className='flex items-center gap-4'>
-                            <p className='capitalize font-bold'>{item.title}</p>
-                            <p className="text-xs">{new Date(item.createdAt).toLocaleString()}</p>
-                        </div>
-                        <div>
-                            <p>{item.description}</p>
-                        </div>
+                        <p className='font-semibold capitalize'>{item.title}</p>
+                        <p>{item.description}</p>
                         <div className='space-x-2'>
-                        <UpdateItem item={item} onUpdate={updateItem}/>
-                        <Button variant={'destructive'} size={'icon'} onClick={() => deleteItem(item._id)}>
-                            <Trash />
-                        </Button>
+                            <UpdateItem item={item} onUpdate={updateItem} />
+                            <Button onClick={() => deleteItem(item._id)} variant={'destructive'} size={'sm'}>
+                                <Trash />
+                            </Button>
                         </div>
                         {
-                            index < items.length - 1 && (<Separator className='my-3' />)
+                            index < items.length - 1 && (<Separator className='my-4' />)
                         }
                     </div>
                 ))

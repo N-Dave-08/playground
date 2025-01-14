@@ -1,8 +1,6 @@
-"use client"
+'use client'
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import React, { Dispatch, SetStateAction } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -13,17 +11,19 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { formSchema } from "@/helpers/schemas"
-import { Dispatch, SetStateAction } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { Item } from "@/components/items"
-import axios from "axios"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Item } from '@/components/items'
+import axios from 'axios'
+import { formSchema } from '@/helpers/schemas'
 
 interface AddItemProps {
     setItems: Dispatch<SetStateAction<Item[]>>
 }
 
 export default function AddItem({ setItems }: AddItemProps) {
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -36,13 +36,14 @@ export default function AddItem({ setItems }: AddItemProps) {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const res  = await axios.post('http://localhost:5000/items', values)
+            const res = await axios.post('http://localhost:5000/items', values)
             setItems((prevItems) => [...prevItems, res.data])
             reset()
         } catch (error) {
             console.error('error adding an item', error)
         }
     }
+
 
     return (
         <Form {...form}>
@@ -54,10 +55,7 @@ export default function AddItem({ setItems }: AddItemProps) {
                         <FormItem>
                             <FormLabel>Title</FormLabel>
                             <FormControl>
-                                <Input
-                                    placeholder="enter your title here"
-                                    {...field}
-                                />
+                                <Input placeholder="enter title here" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -70,7 +68,7 @@ export default function AddItem({ setItems }: AddItemProps) {
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="enter your description here" {...field}/>
+                                <Input placeholder="enter description here" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

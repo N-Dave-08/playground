@@ -28,11 +28,11 @@ mongoose_1.default.connect('mongodb://localhost:27017/nextCrud')
 const ItemSchema = new mongoose_1.default.Schema({
     title: {
         type: String,
-        required: true,
+        required: true
     },
     description: {
         type: String,
-        required: true,
+        required: true
     },
     createdAt: {
         type: Date,
@@ -49,8 +49,8 @@ app.post('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(201).json(newItem);
     }
     catch (error) {
-        console.error('error adding an item', error);
-        res.status(500).json({ error: 'failed adding an item' });
+        console.error('failed creating an item', error);
+        res.status(500).json({ error: 'failed creating an item' });
     }
 }));
 // read
@@ -60,7 +60,7 @@ app.get('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json(items);
     }
     catch (error) {
-        console.error('error fetching item list', error);
+        console.error('failed fetching item list', error);
         res.status(500).json({ error: 'failed fetching item list' });
     }
 }));
@@ -73,8 +73,8 @@ app.put('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).json(updateItem);
     }
     catch (error) {
-        console.error('error updating item', error);
-        res.status(500).json({ error: 'failed updating item' });
+        console.error('failed updating an item', error);
+        res.status(500).json({ error: 'failed updating an item' });
     }
 }));
 // delete
@@ -82,11 +82,11 @@ app.delete('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const { id } = req.params;
         yield ItemModel.findByIdAndDelete(id);
-        res.status(204).send();
+        res.status(204).send('item is deleted');
     }
     catch (error) {
-        console.error('error deleting item', error);
-        res.status(500).json({ error: 'failed deleting item' });
+        console.error('failed deleting an item', error);
+        res.status(500).json({ error: 'failed deleting an item' });
     }
 }));
 app.listen(5000, () => {
