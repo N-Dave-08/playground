@@ -1,6 +1,9 @@
-'use client'
+"use client"
 
 import React, { Dispatch, SetStateAction } from 'react'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -11,12 +14,9 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Item } from '@/components/items'
-import axios from 'axios'
 import { formSchema } from '@/helpers/schemas'
+import { Item } from '@/app/page'
+import axios from 'axios'
 
 interface AddItemProps {
     setItems: Dispatch<SetStateAction<Item[]>>
@@ -32,9 +32,9 @@ export default function AddItem({ setItems }: AddItemProps) {
         },
     })
 
-    const { reset } = form
+    const {reset} = form
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             const res = await axios.post('http://localhost:5000/items', values)
             setItems((prevItems) => [...prevItems, res.data])

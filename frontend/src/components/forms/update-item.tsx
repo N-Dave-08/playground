@@ -17,14 +17,14 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { PenSquare } from "lucide-react"
 import { formSchema } from "@/helpers/schemas"
-import { Item } from "@/components/items"
-import { useState } from "react"
+import { Item } from "@/app/page"
 import axios from "axios"
+import { useState } from "react"
 
 interface UpdateItemProps {
     item: Item
@@ -42,33 +42,33 @@ export function UpdateItem({item, onUpdate}: UpdateItemProps) {
         },
     })
 
-    const handleUpdate = async (values: z.infer<typeof formSchema>) => {
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             const res = await axios.put(`http://localhost:5000/items/${item._id}`, values)
             const updatedItem = res.data
             onUpdate(updatedItem)
             setOpen(false)
         } catch (error) {
-            console.error('error updating item', error)
+            console.error('error adding an item', error)
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size={'sm'}>
+                <Button size={'icon'}>
                     <PenSquare />
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Edit Item</DialogTitle>
+                    <DialogTitle>Edit profile</DialogTitle>
                     <DialogDescription>
                         Make changes to your profile here. Click save when you're done.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleUpdate)} className="space-y-8">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         <FormField
                             control={form.control}
                             name="title"

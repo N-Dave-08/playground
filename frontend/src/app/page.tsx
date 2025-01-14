@@ -1,23 +1,30 @@
 'use client'
 
-import Items, { Item } from "@/components/items";
-import axios from "axios";
+import Items from "@/components/items";
 import { useEffect, useState } from "react";
+import axios from "axios"
 import AddItem from "@/components/forms/add-item";
+
+export type Item = {
+  _id: string
+  title: string
+  description: string
+  createdAt: Date
+}
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([])
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
+    try {
+      const fetchData = async () => {
         const res = await axios.get('http://localhost:5000/items')
         setItems(res.data)
-      } catch (error) {
-        console.error('error fetching item list', error)
       }
+      fetchData()
+    } catch (error) {
+      console.error('error fetching item list', error)
     }
-    fetchData()
   }, [])
 
   const handleDelete = async (id: string) => {
@@ -25,7 +32,7 @@ export default function Home() {
       await axios.delete(`http://localhost:5000/items/${id}`)
       setItems((prevItems) => prevItems.filter((item) => item._id !== id))
     } catch (error) {
-      console.error('error deleting item')
+      console.error('error deleting an item', error)
     }
   }
 
@@ -36,7 +43,7 @@ export default function Home() {
   return (
     <div className="flex gap-3">
       <Items items={items} deleteItem={handleDelete} updateItem={handleUpdate}/>
-      <AddItem setItems={setItems} />
+      <AddItem setItems={setItems}/>
     </div>
   );
 }
