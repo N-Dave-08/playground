@@ -11,10 +11,11 @@ mongoose.connect('mongodb://localhost:27017/nextCrud')
         console.log('connected to mongodb')
     })
     .catch((err) => {
-        console.log('error connecting to mongodb', err)
+        console.error('error connecting to mongodb', err)
     })
 
 interface Item extends Document {
+    _id: string
     title: string
     description: string
     createdAt: Date
@@ -31,8 +32,8 @@ const ItemSchema = new mongoose.Schema<Item>({
     },
     createdAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 })
 
 const ItemModel = mongoose.model<Item>('Item', ItemSchema, 'todo')
@@ -45,24 +46,24 @@ app.post('/items', async (req: Request, res: Response) => {
         await addItem.save()
         res.status(200).json(addItem)
     } catch (error) {
-        console.error('error adding an item', error)
-        res.status(500).json({ error: 'failed adding an item' })
+        console.error('error creating an item', error)
+        res.status(500).json({error: 'failed creating an item'})
     }
 })
 
 // read
-app.get('/items', async(req: Request, res: Response) => {
+app.get('/items', async (req: Request, res: Response) => {
     try {
         const items = await ItemModel.find()
         res.status(200).json(items)
     } catch (error) {
-        console.error('error fetching item list', error)
-        res.status(500).json({ error: 'failed fetching item list' })
+        console.error('error rendering item list', error)
+        res.status(500).json({error: 'failed fetching item list'})
     }
 })
 
 // update
-app.put('/items/:id', async(req: Request, res: Response) => {
+app.put('/items/:id', async (req: Request, res: Response) => {
     try {
         const {id} = req.params
         const {title, description} = req.body
@@ -70,22 +71,22 @@ app.put('/items/:id', async(req: Request, res: Response) => {
         res.status(200).json(updateItem)
     } catch (error) {
         console.error('error updating an item', error)
-        res.status(500).json({ error: 'failed updating an item' })
+        res.status(500).json({error: 'failed updating an item'})
     }
 })
 
 // delete
-app.delete('/items/:id', async(req: Request, res: Response) => {
+app.delete('/items/:id', async (req:Request, res: Response) => {
     try {
         const {id} = req.params
         await ItemModel.findByIdAndDelete(id)
         res.status(204).send()
     } catch (error) {
         console.error('error deleting an item', error)
-        res.status(500).json({ error: 'failed deleting an item' })
+        res.status(500).json({error: 'failed deleting an item'})
     }
 })
 
 app.listen(5000, () => {
-    console.log('server is running in port 5000')
+    console.log('server running in port 5000')
 })

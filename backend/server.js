@@ -23,7 +23,7 @@ mongoose_1.default.connect('mongodb://localhost:27017/nextCrud')
     console.log('connected to mongodb');
 })
     .catch((err) => {
-    console.log('error connecting to mongodb', err);
+    console.error('error connecting to mongodb', err);
 });
 const ItemSchema = new mongoose_1.default.Schema({
     title: {
@@ -36,8 +36,8 @@ const ItemSchema = new mongoose_1.default.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 });
 const ItemModel = mongoose_1.default.model('Item', ItemSchema, 'todo');
 // create
@@ -49,8 +49,8 @@ app.post('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json(addItem);
     }
     catch (error) {
-        console.error('error adding an item', error);
-        res.status(500).json({ error: 'failed adding an item' });
+        console.error('error creating an item', error);
+        res.status(500).json({ error: 'failed creating an item' });
     }
 }));
 // read
@@ -60,7 +60,7 @@ app.get('/items', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json(items);
     }
     catch (error) {
-        console.error('error fetching item list', error);
+        console.error('error rendering item list', error);
         res.status(500).json({ error: 'failed fetching item list' });
     }
 }));
@@ -90,5 +90,5 @@ app.delete('/items/:id', (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 }));
 app.listen(5000, () => {
-    console.log('server is running in port 5000');
+    console.log('server running in port 5000');
 });

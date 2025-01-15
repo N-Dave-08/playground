@@ -8,7 +8,9 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import {
     Form,
     FormControl,
@@ -17,21 +19,18 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import axios from 'axios'
+import { Input } from "@/components/ui/input"
 import { PenSquare } from "lucide-react"
-import { formSchema } from "@/helpers/schemas"
-import { Item } from "@/app/page"
-import axios from "axios"
+import { formSchema } from "@/helpers/shcemas"
 import { useState } from "react"
+import { Item } from "@/components/items"
 
 interface UpdateItemProps {
     item: Item
-    onUpdate: (updatedItem: Item) => void
 }
 
-export function UpdateItem({item, onUpdate}: UpdateItemProps) {
+export function UpdateItem({item}: UpdateItemProps) {
     const [open, setOpen] = useState<boolean>(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -42,14 +41,12 @@ export function UpdateItem({item, onUpdate}: UpdateItemProps) {
         },
     })
 
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const res = await axios.put(`http://localhost:5000/items/${item._id}`, values)
-            const updatedItem = res.data
-            onUpdate(updatedItem)
+            await axios.put(`http://localhost:5000/items/${item._id}`, values)
             setOpen(false)
         } catch (error) {
-            console.error('error adding an item', error)
+            console.error('error updating an item', error)
         }
     }
 
