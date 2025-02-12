@@ -3,6 +3,8 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { createUser, updateUser } from '../services/userService';
 import { User } from '../types/User';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 interface Props {
   fetchUsers: () => void;
@@ -35,29 +37,28 @@ export default function UserForm({ fetchUsers, editingUser, setEditingUser }: Pr
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4">
-      <input
+    <form onSubmit={handleSubmit} className="mb-4 space-y-3">
+      <Input
         type="text"
         placeholder="Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
-        className="w-full p-2 mb-2 rounded bg-gray-700 text-white"
       />
-      <input
+      <Input
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className="w-full p-2 mb-2 rounded bg-gray-700 text-white"
       />
-      <button
+      <Button
         type="submit"
-        className="w-full bg-green-500 hover:bg-green-600 text-white p-2 rounded"
+        variant={'secondary'}
+        className='w-full'
       >
         {editingUser ? 'Update User' : 'Add User'}
-      </button>
+      </Button>
     </form>
   );
 }
