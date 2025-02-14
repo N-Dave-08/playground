@@ -5,7 +5,7 @@ import { authenticateToken } from '../config/authMiddleware';
 const router = express.Router();
 
 // Public Routes (No Authentication Required)
-router.post('/users', userController.createUser); // Signup (if applicable)
+router.post('/create', userController.createUser); // Signup (if applicable)
 
 // Protected Routes (Require Authentication)
 router.get('/', authenticateToken, userController.getUsers);
