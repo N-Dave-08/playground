@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key_here';
+const JWT_SECRET = process.env.JWT_SECRET || 'fJJIMf7Zhhg7CxIBZPP2dQ2nGQGj7k8h9rCDwo4O02Is';
 
 interface AuthRequest extends Request {
   user?: any;
