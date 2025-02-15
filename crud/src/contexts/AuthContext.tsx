@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import authService, { LoginCredentials, RegisterCredentials } from '@/services/authService';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: number;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter()
 
   useEffect(() => {
     const user = authService.getCurrentUser();
@@ -46,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await authService.register(credentials);
       setUser(response.user);
-      setIsAuthenticated(true);
+      router.push('/login')
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
