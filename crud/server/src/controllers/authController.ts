@@ -65,7 +65,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     );
 
     if (result.rows.length === 0) {
-      res.status(401).json({ message: "Invalid email or password" });
+      res.status(401).json({ message: "email does not exist in the database" });
       return;
     }
 
@@ -73,7 +73,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      res.status(401).json({ message: "Invalid email or password" });
+      res.status(401).json({ message: "wrong password" });
       return;
     }
 
