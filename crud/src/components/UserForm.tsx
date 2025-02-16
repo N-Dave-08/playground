@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useEffect } from 'react';
 import { createUser, updateUser } from '../services/userService';
 import { User } from '../types/User';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface Props {
   fetchUsers: () => void;
@@ -13,60 +16,80 @@ interface Props {
   setEditingUser: (user: User | null) => void;
 }
 
+const createUserSchema = z.object({
+  name: z.string()
+    .min(1, 'Name is required')
+    .min(2, 'Name must be at least 2 characters'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Invalid email format'),
+  password: z.string()
+    .min(1, 'Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+});
+
+const updateUserSchema = z.object({
+  name: z.string()
+    .min(1, 'Name is required')
+    .min(2, 'Name must be at least 2 characters'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Invalid email format'),
+  password: z.string()
+    .min(6, 'Password must be at least 6 characters')
+    .optional()
+    .or(z.literal('')),
+});
+
+type CreateUserFormData = z.infer<typeof createUserSchema>;
+type UpdateUserFormData = z.infer<typeof updateUserSchema>;
+
 export default function UserForm({ fetchUsers, editingUser, setEditingUser }: Props) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+  } = useForm<CreateUserFormData | UpdateUserFormData>({
+    resolver: zodResolver(editingUser ? updateUserSchema : createUserSchema),
+  });
 
   useEffect(() => {
     if (editingUser) {
-      setName(editingUser.name);
-      setEmail(editingUser.email);
-      setPassword('');
+      setValue('name', editingUser.name);
+      setValue('email', editingUser.email);
+      setValue('password', '');
+    } else {
+      reset({ name: '', email: '', password: '' });
     }
-  }, [editingUser]);
+  }, [editingUser, setValue, reset]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    // Validate password for new users or when changing password
-    if (!editingUser || password) {
-      if (password.length < 6) {
-        setError('Password must be at least 6 characters long');
-        return;
-      }
-    }
-
+  const onSubmit = async (data: CreateUserFormData | UpdateUserFormData) => {
     try {
       if (editingUser) {
-        // Only include password in update if it was changed
-        await updateUser(editingUser.id!, { 
-          name, 
-          email,
-          ...(password ? { password } : {})
-        });
+        // Only include password in update if it was provided
+        const updateData = {
+          name: data.name,
+          email: data.email,
+          ...(data.password ? { password: data.password } : {})
+        };
+        await updateUser(editingUser.id!, updateData);
         setEditingUser(null);
       } else {
-        if (!password) {
-          setError('Password is required for new users');
-          return;
-        }
-        await createUser({ name, email, password });
+        await createUser(data as CreateUserFormData);
       }
       // Reset form
-      setName('');
-      setEmail('');
-      setPassword('');
+      reset({ name: '', email: '', password: '' });
       fetchUsers();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred');
+      // Set error using setError from react-hook-form if needed
+      throw err;
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 bg-neutral rounded-lg shadow-lg space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-6 bg-neutral rounded-lg shadow-lg space-y-4 w-1/3">
       <h2 className="text-xl font-semibold mb-4">
         {editingUser ? 'Edit User' : 'Add New User'}
       </h2>
@@ -76,21 +99,25 @@ export default function UserForm({ fetchUsers, editingUser, setEditingUser }: Pr
         <Input
           id="name"
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
+          {...register('name')}
+          className={errors.name ? 'border-red-500' : ''}
         />
+        {errors.name && (
+          <p className="text-red-500 text-sm">{errors.name.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          type="text"
+          {...register('email')}
+          className={errors.email ? 'border-red-500' : ''}
         />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -100,16 +127,13 @@ export default function UserForm({ fetchUsers, editingUser, setEditingUser }: Pr
         <Input
           id="password"
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required={!editingUser}
-          minLength={6}
+          {...register('password')}
+          className={errors.password ? 'border-red-500' : ''}
         />
+        {errors.password && (
+          <p className="text-red-500 text-sm">{errors.password.message}</p>
+        )}
       </div>
-
-      {error && (
-        <div className="text-red-500 text-sm">{error}</div>
-      )}
 
       <div className="flex gap-2">
         <Button type="submit" variant={'secondary'}>
@@ -121,10 +145,7 @@ export default function UserForm({ fetchUsers, editingUser, setEditingUser }: Pr
             variant="outline"
             onClick={() => {
               setEditingUser(null);
-              setName('');
-              setEmail('');
-              setPassword('');
-              setError('');
+              reset({ name: '', email: '', password: '' });
             }}
           >
             Cancel
