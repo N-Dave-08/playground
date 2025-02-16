@@ -38,8 +38,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await authService.login(credentials);
       setUser(response.user);
       setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Login error:', error);
+      router.push('/')
+    } catch (error: any) {
+      // Pass through the original error without modifying it
       throw error;
     }
   };
