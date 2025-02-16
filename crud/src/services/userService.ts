@@ -15,7 +15,7 @@ export const getUsers = async () => {
 
 export const createUser = async (user: User) => {
     try {
-        const response = await axiosInstance.post<User>(`${API_URL}/users`, user);
+        const response = await axiosInstance.post<User>(`${API_URL}/create`, user);
         return response.data;
     } catch (error) {
         console.error('Error adding user:', error);
