@@ -7,11 +7,24 @@ import UserList from '@/components/UserList';
 import { useState, useEffect } from 'react';
 import { User } from '@/types/User';
 import { getUsers } from '@/services/userService';
+import { Loader } from '@/components/Loader';
 
 export default function Home() {
   const { user, isAuthenticated, logout } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true)
+
+
+  useEffect(() => {
+    // Simulate authentication check delay
+    const checkAuth = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay for effect
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, []);
 
   const fetchUsers = async () => {
     const data = await getUsers();
@@ -23,6 +36,10 @@ export default function Home() {
       fetchUsers();
     }
   }, [isAuthenticated]);
+
+  if (loading) {
+    return <Loader size='medium'/>
+  }
 
   if (!isAuthenticated) {
     return (
